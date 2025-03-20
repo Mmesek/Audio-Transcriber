@@ -1,0 +1,7 @@
+[tool.ruff]
+line-length = 120
+src = ["src"]
+
+[tool.ruff.format]
+docstring-code-format = true
+line-ending = "lf"
