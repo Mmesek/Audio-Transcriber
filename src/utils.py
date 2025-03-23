@@ -49,6 +49,11 @@ def process(filepath: str, model) -> list[Segment]:
     if len(audio := detect_audio_sources(filepath)) > 1:
         print("Detected multiple audio sources, splitting")
         paths = split(filepath, audio, "tmp")
+        for path in paths:
+            if not path.startswith("tmp/"):
+                path = "tmp/" + path
+            if not path.endswith(".wav"):
+                path += ".wav"
     else:
         paths = [filepath]
     speakers = {"stream_1": "Speaker", "stream_2": "Mic"}
@@ -56,7 +61,7 @@ def process(filepath: str, model) -> list[Segment]:
     total = []
     for path in paths:
         print("Parsing audio source", path)
-        total.extend(transcibe("tmp/" + path + ".wav", model, speakers.get(path, "Other")))
+        total.extend(transcibe(path, model, speakers.get(path, "Other"), word_separation))
     return total
 
 
