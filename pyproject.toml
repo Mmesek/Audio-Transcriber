@@ -1,3 +1,14 @@
+[project]
+name = "Transcriber"
+version = "0.1.0"
+description = " Audio Transcriber supporting multiple streams in a file as separate speakers"
+readme = "README.md"
+requires-python = ">=3.13"
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic.dependencies]
+file = "requirements.txt"
+
 [tool.ruff]
 line-length = 120
 src = ["src"]
