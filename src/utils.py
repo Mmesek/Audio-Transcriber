@@ -45,19 +45,20 @@ def transcibe(filepath: str, model: WhisperModel, speaker: str = None, word_sepa
     return lines
 
 
-def process(filepath: str, model: WhisperModel, word_separation: bool) -> list[Segment]:
+def process(
+    filepath: str, model: WhisperModel, word_separation: bool, tmp_path: str, names: dict[str, str]
+) -> list[Segment]:
     """Parse audio file. Optionally, splits & extracts separate audio sources from a file"""
     if len(audio := detect_audio_sources(filepath)) > 1:
         print("Detected multiple audio sources, splitting")
         paths = split(filepath, audio, tmp_path)
     else:
         paths = [filepath]
-    speakers = {"stream_1": "Speaker", "stream_2": "Mic"}
     print("Combining audio sources into single transcript")
     total = []
     for path in paths:
         print("Parsing audio source", path)
-        total.extend(transcibe(path, model, speakers.get(path, "Other"), word_separation))
+        total.extend(transcibe(path, model, names.get(path, "Other"), word_separation))
     return total
 
 
