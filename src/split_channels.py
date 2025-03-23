@@ -1,5 +1,6 @@
 import ffmpeg
 from ffprobe import ffprobe
+from pathlib import Path
 
 
 def detect_audio_sources(filepath: str) -> ffprobe.FFStream:
@@ -12,9 +13,10 @@ def split(filepath: str, audio_streams: list[ffprobe.FFStream], tmp_path: str) -
     worker = ffmpeg.FFmpeg().option("y").input(filepath)
     outputs = []
     for stream in audio_streams:
-        outputs.append(f"stream_{stream.index}")
+        path = Path(tmp_path, f"stream_{stream.index}.wav")
+        outputs.append(path)
         worker.output(
-            f"{tmp_path}/stream_{stream.index}.wav",
+            path,
             map=f"0:a:{int(stream.index) - 1}",
             options={"c:a": "mp3"},
         )

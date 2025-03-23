@@ -49,12 +49,7 @@ def process(filepath: str, model: WhisperModel, word_separation: bool) -> list[S
     """Parse audio file. Optionally, splits & extracts separate audio sources from a file"""
     if len(audio := detect_audio_sources(filepath)) > 1:
         print("Detected multiple audio sources, splitting")
-        paths = split(filepath, audio, "tmp")
-        for path in paths:
-            if not path.startswith("tmp/"):
-                path = "tmp/" + path
-            if not path.endswith(".wav"):
-                path += ".wav"
+        paths = split(filepath, audio, tmp_path)
     else:
         paths = [filepath]
     speakers = {"stream_1": "Speaker", "stream_2": "Mic"}
