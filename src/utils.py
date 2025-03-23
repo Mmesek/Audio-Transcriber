@@ -20,7 +20,7 @@ class Segment:
         return f"{self.timestamp()} {self.with_speaker()}"
 
 
-def transcibe(filepath: str, model: WhisperModel, speaker: str = None) -> list[Segment]:
+def transcibe(filepath: str, model: WhisperModel, speaker: str = None, word_separation: bool = False) -> list[Segment]:
     """Transcribes audio file into list of words and timestamps"""
     segments, info = model.transcribe(
         filepath,
@@ -37,14 +37,15 @@ def transcibe(filepath: str, model: WhisperModel, speaker: str = None) -> list[S
     lines = []
 
     for segment in segments:
-        for word in segment.words:
-            lines.append(Segment(word.start, word.end, word.word, speaker))
-        # else:
-        #    lines.append(Segment(segment.start, segment.end, segment.text, speaker))
+        if word_separation:
+            for word in segment.words:
+                lines.append(Segment(word.start, word.end, word.word, speaker))
+        else:
+            lines.append(Segment(segment.start, segment.end, segment.text, speaker))
     return lines
 
 
-def process(filepath: str, model) -> list[Segment]:
+def process(filepath: str, model: WhisperModel, word_separation: bool) -> list[Segment]:
     """Parse audio file. Optionally, splits & extracts separate audio sources from a file"""
     if len(audio := detect_audio_sources(filepath)) > 1:
         print("Detected multiple audio sources, splitting")
@@ -65,9 +66,12 @@ def process(filepath: str, model) -> list[Segment]:
     return total
 
 
-def segmentize(total: list[Segment]) -> list[Segment]:
+def segmentize(total: list[Segment], single_sentence: bool) -> list[Segment]:
     """Combines words into sentences according to timestamp they were first spoken at by speakers"""
     total: list[Segment] = sorted(total, key=lambda x: (x.start, x.end))
+    if not single_sentence:
+        return total
+
     final = []
     current_segment = Segment(0, 0, "", "")
     for segment in total:
