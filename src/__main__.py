@@ -7,8 +7,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument("input", help="Path to audio file", nargs="*", default="audio.mp3")
 parser.add_argument("-o", "--output", help="Path to output file. Default is <input>.txt. Works for single audio file")
 parser.add_argument("-t", "--tmp", help="Path to output directory. Default is tmp/", default="tmp/")
-parser.add_argument("-w", "--word_separation", help="Separate sentences on word-level granularity", default=False)
-parser.add_argument("-s", "--single_sentence", help="Merge same-speaker sentences into single one", default=False)
+parser.add_argument(
+    "-w", "--word_separation", help="Separate sentences on word-level granularity", default=False, action="store_true"
+)
+parser.add_argument(
+    "-s", "--single_sentence", help="Merge same-speaker sentences into single one", default=False, action="store_true"
+)
+parser.add_argument("-M", "--metadata", help="Whether to include timestamp/speaker", default=False, action="store_true")
 parser.add_argument(
     "-m",
     "--model",
@@ -30,7 +35,11 @@ def main(filepath: str, model, speakers: dict[str, str]):
     result = args.output or ".".join(filepath.split(".")[0:-1] + ["txt"])
     print(f"Starting transcription using {args.model} of file {filepath} to {result}")
 
-    save(result, segmentize(process(filepath, model, args.word_separation, args.tmp, speakers), args.single_sentence))
+    save(
+        result,
+        segmentize(process(filepath, model, args.word_separation, args.tmp, speakers), args.single_sentence),
+        args.metadata,
+    )
 
 
 def get_files(filepath: str):

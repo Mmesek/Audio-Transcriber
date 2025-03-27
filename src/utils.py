@@ -19,6 +19,9 @@ class Segment:
     def with_timestamp(self):
         return f"{self.timestamp()} {self.with_speaker()}"
 
+    def clean(self):
+        return self.text + "\n"
+
 
 def transcibe(filepath: str, model: WhisperModel, speaker: str = None, word_separation: bool = False) -> list[Segment]:
     """Transcribes audio file into list of words and timestamps"""
@@ -81,6 +84,6 @@ def segmentize(total: list[Segment], single_sentence: bool) -> list[Segment]:
     return final
 
 
-def save(filepath: str, segments: list[Segment]):
+def save(filepath: str, segments: list[Segment], metadata: bool):
     with open(filepath, "w", newline="", encoding="utf-8") as file:
-        file.writelines([i.with_timestamp() for i in segments if i.text])
+        file.writelines([i.with_timestamp() if metadata else i.clean() for i in segments if i.text])
