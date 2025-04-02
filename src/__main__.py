@@ -33,7 +33,7 @@ def load():
 
 
 def main(filepath: Path, model, speakers: dict[str, str]):
-    result = args.output or ".".join(filepath.name.split(".")[0:-1] + ["txt"])
+    result = args.output or Path(filepath.parent, ".".join(filepath.name.split(".")[0:-1] + ["txt"]))
     print(f"Starting transcription using {args.model} of file {filepath} to {result}")
 
     save(
