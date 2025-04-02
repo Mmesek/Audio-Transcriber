@@ -1,5 +1,6 @@
 import argparse
 import os
+from pathlib import Path
 
 from src.utils import process, save, segmentize
 
@@ -31,25 +32,25 @@ def load():
     return model
 
 
-def main(filepath: str, model, speakers: dict[str, str]):
-    result = args.output or ".".join(filepath.split(".")[0:-1] + ["txt"])
+def main(filepath: Path, model, speakers: dict[str, str]):
+    result = args.output or ".".join(filepath.name.split(".")[0:-1] + ["txt"])
     print(f"Starting transcription using {args.model} of file {filepath} to {result}")
 
     save(
         result,
-        segmentize(process(filepath, model, args.word_separation, args.tmp, speakers), args.single_sentence),
+        segmentize(process(str(filepath), model, args.word_separation, args.tmp, speakers), args.single_sentence),
         args.metadata,
     )
 
 
 def get_files(filepath: str):
     files = []
-    for file in filepath:
-        if os.path.isdir(file):
-            for file in os.listdir(file):
-                files.append(file)
+    for path in filepath:
+        if os.path.isdir(path):
+            for file in os.listdir(path):
+                files.append(Path(path, file))
         else:
-            files.append(file)
+            files.append(Path(path))
     return files
 
 

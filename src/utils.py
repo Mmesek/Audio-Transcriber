@@ -20,7 +20,7 @@ class Segment:
         return f"{self.timestamp()} {self.with_speaker()}"
 
     def clean(self):
-        return self.text + "\n"
+        return self.text.strip() + "\n"
 
 
 def transcibe(filepath: str, model: WhisperModel, speaker: str = None, word_separation: bool = False) -> list[Segment]:
