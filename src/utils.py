@@ -23,7 +23,9 @@ class Segment:
         return self.text.strip() + "\n"
 
 
-def transcibe(filepath: str, model: WhisperModel, speaker: str = None, word_separation: bool = False) -> list[Segment]:
+def transcibe(
+    filepath: str, model: WhisperModel, speaker: str = None, word_separation: bool = False, language: str = "en"
+) -> list[Segment]:
     """Transcribes audio file into list of words and timestamps"""
     segments, info = model.transcribe(
         filepath,
@@ -35,6 +37,7 @@ def transcibe(filepath: str, model: WhisperModel, speaker: str = None, word_sepa
         vad_parameters={"min_silence_duration_ms": 1000},
         no_speech_threshold=1,
         temperature=1,
+        language=language,
     )
 
     lines = []
@@ -49,7 +52,7 @@ def transcibe(filepath: str, model: WhisperModel, speaker: str = None, word_sepa
 
 
 def process(
-    filepath: str, model: WhisperModel, word_separation: bool, tmp_path: str, names: dict[str, str]
+    filepath: str, model: WhisperModel, word_separation: bool, tmp_path: str, names: dict[str, str], language: str
 ) -> list[Segment]:
     """Parse audio file. Optionally, splits & extracts separate audio sources from a file"""
     if len(audio := detect_audio_sources(filepath)) > 1:
@@ -61,7 +64,7 @@ def process(
     total = []
     for path in paths:
         print("Parsing audio source", path)
-        total.extend(transcibe(path, model, names.get(path, "Other"), word_separation))
+        total.extend(transcibe(path, model, names.get(path, "Other"), word_separation, language))
     return total
 
 

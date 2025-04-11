@@ -21,6 +21,7 @@ parser.add_argument(
     help="Model to use. Default is `distil-large-v3`",
     default="distil-large-v3",
 )
+parser.add_argument("-l", "--language", help="Language of the file", default="en")
 
 args = parser.parse_args()
 
@@ -38,7 +39,9 @@ def main(filepath: Path, model, speakers: dict[str, str]):
 
     save(
         result,
-        segmentize(process(str(filepath), model, args.word_separation, args.tmp, speakers), args.single_sentence),
+        segmentize(
+            process(str(filepath), model, args.word_separation, args.tmp, speakers, args.language), args.single_sentence
+        ),
         args.metadata,
     )
 
